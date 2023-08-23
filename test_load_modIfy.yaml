@@ -1,0 +1,77 @@
+TestConfigurations:
+  - Testcase:
+      Name: Test1
+      RxfName: http.rxf
+      SaveName: save2.rxf
+      Http_client:
+        - Name: HTTPClient1
+          mode : "modify"
+          role: "Client"
+          networkName: "Traffic1@Network1"
+          #any HTTP configs under same object
+          httpVersion: "1.0"
+          keepAlive : 1
+          cookieJarSize: 25
+          commandTimeout: 85
+          Commands:
+            - commandType: GET
+              mode : "add_command"
+              agentName : "HTTPClient1"
+              networkName: "Traffic1@Network1"
+              destination: "Traffic2_HTTPServer1:80"
+              pageObject: "/1024k.html"
+      #any HTTP server config under 1 node
+      Http_server:
+        - Name : HTTPServer1
+          mode : "modify" 
+          role : Server
+          enableHTTP2: false
+          requestTimeout : 250
+          networkName : "Traffic2@Network2"
+          urlStatsCount: 50
+      ObjectiveSettings:
+        - ActivityName: HTTPClient1
+          networkName: "Traffic1@Network1"
+          mode : "modify"
+          role : "Client"
+          userObjectiveType: transactionRate
+          userObjectiveValue: 1000
+          enableConstraint : True
+          sustainTime: 60
+          rampDownTime: 15
+          
+  - Testcase:
+      Name: Test2
+      RxfName: http.rxf
+      SaveName: http2.rxf
+      Http_client:
+        - Name: HTTPClient1
+          #any HTTP configs under same object
+          mode : "modify"
+          role: "Client"
+          networkName: "Traffic1@Network1"
+          httpVersion: "1.0"
+          keepAliveTime : 60
+          commandTimeout: 60
+          Commands:
+            - commandType: GET
+              mode : "add_command"
+              agentName : "HTTPClient1"
+              networkName: "Traffic1@Network1"
+              destination: "Traffic2_HTTPServer1:80"
+              pageObject: "/256k.html"
+      #any HTTP server config under 1 node
+      Http_server:
+        - Name : HTTPServer1
+          mode : "modify" 
+          networkName: "Traffic2@Network2"
+          role : Server
+          enableNewSslSupport : True
+      ObjectiveSettings:
+        - ActivityName: HTTPClient1
+          networkName: "Traffic1@Network1"
+          mode : "modify"
+          role : "Client"
+          userObjectiveType: connectionRate
+          userObjectiveValue: 1000
+          sustainTime: 60
